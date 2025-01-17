@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <link rel="icon" href="favicon/favicon.ico" type="image/x-icon">
+     <!-- Enlace a Font Awesome -->
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Enlace al manifest.json -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FNLSPHKXFW"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-FNLSPHKXFW');
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Caja de estado (abierto/cerrado) */
+        #status-bar {
+            width: 100%;
+            text-align: center;
+            font-size: 24px;
+            color: white;
+            padding: 10px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1001;
+        }
+
+        footer {
+            position: fixed;
+            /* Hace que el footer esté fijo en la parte inferior */
+            bottom: 0;
+            /* Alinea el footer a la parte inferior de la ventana */
+            left: 0;
+            /* Alinea el footer al lado izquierdo de la ventana */
+            background-color: white;
+            color: white;
+            display: flex;
+            justify-content: center;
+            /* Centra los logos en el footer */
+            align-items: center;
+            /* Centra los logos verticalmente */
+            width: 100%;
+            /* Asegura que el footer ocupe todo el ancho de la página */
+            z-index: 1000;
+            /* Asegura que el footer esté por encima de otros elementos */
+            border-top: 2px solid black;
+            /* Agrega una línea negra de 2px en la parte superior */
+        }
+
+        footer img {
+            width: 40px;
+            /* Ancho de los logos */
+            height: auto;
+            /* Mantiene la proporción */
+            margin: 10px 5px;
+            /* Espacio entre los logos (10px arriba y abajo, 15px a los lados) */
+            background-color: white;
+            /* Color de fondo para visualizar el espacio */
+        }
+
+        .separator {
+            width: 1px;
+            /* Ancho de la barra */
+            height: 50px;
+            /* Altura de la barra */
+            background-color: rgb(10, 10, 10);
+            /* Color de la barra */
+            margin: 0 10px;
+            /* Espacio a los lados de la barra */
+        }
+
+        .imagenes {
+            display: flex;
+            transition: transform 1s ease-in-out;
+            width: 100%;
+            height: 100%;
+            /* Altura del carrusel */
+        }
+
+        .imagenes img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .button-container-1 {
+            position: fixed;
+            bottom: 10%;
+            /* Espacio desde la parte inferior */
+            right: 20px;
+            /* Espacio desde la parte derecha */
+            z-index: 1000;
+            /* Asegura que esté por encima de otros elementos */
+            display: flex;
+            flex-direction: column;
+            /* Coloca los elementos en columna */
+            align-items: center;
+            /* Centra los elementos */
+        }
+
+        .other-button,
+        #action-button {
+            margin-bottom: 20px;
+            /* Espaciado entre el botón de acción y el ícono */
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50%;
+            /* Hace que el botón sea redondo */
+            background-color: #ddd;
+            /* Color de fondo del botón */
+            color: #333;
+            /* Color del texto */
+            cursor: not-allowed;
+            /* Cursor desactivado */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Sombra alrededor del botón */
+            transition: transform 0.3s ease;
+            /* Efecto al pasar el cursor */
+        }
+
+        #action-button:enabled {
+            cursor: pointer;
+            background-color: #ca3333;
+            /* Cambia el color cuando está habilitado */
+            color: white;
+        }
+
+        .other-icon {
+            width: 80px;
+            /* Ajusta el ancho del ícono */
+            height: 80px;
+            /* Hace el ícono cuadrado */
+            border-radius: 50%;
+            /* Hace que el ícono sea redondo */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Sombra alrededor del ícono */
+            transition: transform 0.3s ease;
+            /* Efecto al pasar el cursor */
+        }
+
+        .other-icon:hover {
+            transform: scale(1.1);
+            /* Agranda el botón o ícono al pasar el cursor */
+        }
+
+
+        .other-icon:hover {
+            transform: scale(1.1);
+            /* Agranda el ícono al pasar el cursor */
+        }
+
+
+        .notification {
+            background-color: #f1f1f1;
+            color: #333;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            max-width: 300px;
+            z-index: 1000;
+        }
+
+        .notification h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .notification p {
+            margin: 5px 0 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Barra de estado -->
+    <div id="status-bar"></div>
+
+    <div class="imagenes">
+        <img src="img/promociones/2_pizzas_romanas.png" alt="Imagen 1">
+    </div>
+
+    <div class="button-container-1">
+        <!-- Botón de Acción (arriba del ícono redondo) -->
+        <button class="other-icon" id="action-button" disabled>
+            <img src="img/logos/logo_notificacion_pedidos.png" alt="Logo Notificaciones" class="other-icon">
+        </button>
+        
+
+        <!-- Ícono redondo -->
+        <a href="https://www.instagram.com/laverapizza.arg/profilecard/?igsh=MXA4Y3pnOHdyNHdpbA==" class="other-button">
+            <img src="img/eventos/logo_año_nuevo.png" alt="Logo Año Nuevo" class="other-icon">
+        </a>
+    </div>
+
+
+    <script src="service-worker.js"></script>
+
+    <script type="module">
+        // Importa Firebase y sus módulos necesarios
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-messaging.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
+        import { getRemoteConfig, fetchAndActivate, getString } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-remote-config.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
+
+        console.log("Iniciando script...");
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzMNKimcw1kaaJlMdTKj7RAdlsHyaImBk",
+            authDomain: "vera-pizza-app.firebaseapp.com",
+            databaseURL: "https://vera-pizza-app-default-rtdb.firebaseio.com/",
+            projectId: "vera-pizza-app",
+            storageBucket: "vera-pizza-app.appspot.com",
+            messagingSenderId: "783988757356",
+            appId: "1:783988757356:web:c66d3f2571aff0f125d949",
+            measurementId: "G-FNLSPHKXFW"
+        };
+
+        console.log("Inicializando Firebase...");
+        const app = initializeApp(firebaseConfig);
+        console.log("Firebase inicializado:", app);
+
+        const database = getDatabase(app);
+        console.log("Base de datos inicializada:", database);
+
+        const messaging = getMessaging(app);
+        console.log("Servicio de mensajería inicializado:", messaging);
+
+        const remoteConfig = getRemoteConfig(app);
+        console.log("Remote Config inicializado:", remoteConfig);
+
+
+
+        if ('serviceWorker' in navigator) {
+            console.log("Service Worker soportado. Registrando...");
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker registrado con éxito', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('Error al registrar el Service Worker:', error);
+                    });
+            });
+        } else {
+            console.error("Service Worker no soportado en este navegador.");
+        }
+
+        const requestNotificationPermission = async () => {
+            console.log("Solicitando permiso de notificaciones...");
+            try {
+                if (Notification.permission === 'default') {
+                    console.log("Permiso predeterminado, solicitando...");
+                    const permission = await Notification.requestPermission();
+                    if (permission !== 'granted') {
+                        console.warn('Permiso no concedido por el usuario.');
+                        return;
+                    }
+                } else {
+                    console.log(`Permiso ya otorgado: ${Notification.permission}`);
+                }
+
+                const token = await getToken(messaging, {
+                    vapidKey: "BPRKz7-_9El7FWTG7hpCTGhl_cPRoWK79Ng2UwgOuctmGQc3sxG0Rg2io2aAsvYFvBDPmF9vd-6g6oG65XQmJ4A"
+                });
+                if (token) {
+                    console.log("FCM Token obtenido:", token);
+                } else {
+                    console.error("No se pudo obtener el token.");
+                }
+            } catch (err) {
+                console.error("Error al obtener el token de FCM:", err);
+            }
+        };
+        requestNotificationPermission();
+
+        onMessage(messaging, (payload) => {
+            console.log("Mensaje recibido:", payload);
+            if (payload && payload.notification) {
+                displayNotification(payload.notification);
+            } else {
+                console.warn("Mensaje recibido sin notificación:", payload);
+            }
+        });
+
+        const displayNotification = (notification) => {
+            console.log("Mostrando notificación:", notification);
+            const notificationElement = document.createElement("div");
+            notificationElement.classList.add("notification");
+            notificationElement.innerHTML = `
+                <h4>${notification.title}</h4>
+                <p>${notification.body}</p>
+            `;
+            document.body.appendChild(notificationElement);
+            setTimeout(() => {
+                notificationElement.remove();
+            }, 5000);
+        };
+
+        async function checkOrderStatus() {
+            console.log("Verificando estado de los pedidos...");
+            try {
+                // Referencia a la base de datos para pedidos
+                const ordersRef = ref(database, 'pedidos');
+                console.log("Referencia a la base de datos creada:", ordersRef);
+
+                // Obtén datos de la base de datos
+                const snapshot = await get(ordersRef);
+                console.log("Datos obtenidos de la base de datos:", snapshot);
+
+                // Verifica si hay datos
+                if (snapshot.exists()) {
+                    const ordersData = snapshot.val();
+                    console.log("Pedidos encontrados:", ordersData);
+
+                    // Verifica si hay un pedido activo
+                    let hasActiveOrder = false;
+
+                    Object.keys(ordersData).forEach((orderId) => {
+                        const order = ordersData[orderId];
+                        console.log(`Revisando pedido ${orderId}:`, order);
+
+                        // Comprueba si el estado del pedido no es "Entregado"
+                        if (order.status !== "Entregado") {
+                            console.log(`Pedido ${orderId} está en proceso. Estado: ${order.status}`);
+                            hasActiveOrder = true;
+                        }
+                    });
+
+                    // Modifica el estado del botón en función de los pedidos activos
+                    const actionButton = document.getElementById('action-button');
+                    if (actionButton) {
+                        if (hasActiveOrder) {
+                            console.log("Hay pedidos activos. Mostrando botón.");
+                            actionButton.style.display = "flex";
+                            actionButton.disabled = false;
+                        } else {
+                            console.log("No hay pedidos activos. Ocultando botón.");
+                            actionButton.style.display = "none";
+                        }
+                    } else {
+                        console.error("No se encontró el botón 'action-button' en el DOM.");
+                    }
+                } else {
+                    console.warn("No hay datos de pedidos en la base de datos.");
+                    const actionButton = document.getElementById('action-button');
+                    if (actionButton) {
+                        actionButton.style.display = "none";
+                    }
+                }
+            } catch (error) {
+                console.error("Error al verificar estado de pedidos:", error);
+            }
+        }
+
+        // Llama a la función para verificar pedidos
+        checkOrderStatus();
+
+
+        document.getElementById("action-button").addEventListener("click", () => {
+            window.location.href = "seguimiento_pedidos.html";
+        });
+
+        // Opcional: habilitar el botón para prueba
+        document.getElementById("action-button").disabled = false;
+
+    </script>
+
+
+
+    <script type="module" src="estado.js"></script>
+
+</body>
+
+<footer>
+    <a href="index.html">
+        <img src="img/casa.png" alt="Logo 1">
+    </a>
+    <div class="separator"></div>
+
+    <a href="contacto.html">
+        <img src="img/redes-sociales.png" alt="Logo 2">
+    </a>
+    <div class="separator"></div>
+
+    <a href="puntos.html">
+        <img src="img/premios.png" alt="Logo 2">
+    </a>
+    <div class="separator"></div>
+
+    <a href="promociones.html">
+        <img src="img/promocion.png" alt="Logo 4">
+    </a>
+    <div class="separator"></div>
+
+    <a href="productos-ventas.html">
+        <img src="img/pizza.png" alt="Logo 3">
+    </a>
+</footer>
+
+</html>

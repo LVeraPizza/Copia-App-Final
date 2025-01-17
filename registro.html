@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #333130;
+            /* Color claro tipo masa */
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(32, 30, 30, 0.5); /* 0.8 significa 80% opacidad */
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            max-width: 400px;
+            position: relative; 
+        }
+
+        /* Título */
+        h1 {
+            color: white;
+            /* Color que evoca el tomate */
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        /* Párrafo */
+        p {
+            color: white;
+            /* Color marrón claro */
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        /* Botón de Google */
+        .google-btn {
+            display: flex;
+            justify-content: space-between;
+            /* Alinea los elementos a la derecha */
+            align-items: center;
+            background-color: #f24e1e;
+            /* Rojo similar al tomate */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 20px;
+            width: 100%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-btn:hover {
+            background-color: #d14317;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .google-btn:active {
+            background-color: #b73514;
+            transform: translateY(0);
+        }
+
+        /* Logo de Google */
+        .google-icon {
+            width: 40px;
+            /* Ajusta el tamaño del ícono */
+            height: 40px;
+            margin-right: 10px;
+            /* Espacio entre el texto y el ícono */
+        }
+
+
+        /* Spinner de carga */
+        .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f24e1e;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1.5s linear infinite;
+        }
+
+        /* Animación de rotación */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Fondo de la página */
+        .background-image {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: url('fondo_login.png') no-repeat center center fixed;
+            background-size: cover;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-image"></div>
+    <div class="container">
+        <h1>¡Bienvenido a La Vera Pizza!</h1>
+        <p>Inicia sesión con Google para disfrutar de nuestras deliciosas pizzas napolitanas.</p>
+        <button id="login-google" class="google-btn">
+            Iniciar sesión con Google
+            <!-- Imagen del logo de Google alineado a la derecha -->
+            <img class="google-icon" src="img/logos/google.png"
+                alt="Google">
+        </button>
+
+        <!-- Spinner de carga -->
+        <div class="spinner" id="loading"></div>
+    </div>
+
+    <script type="module">
+        // Firebase Configuración
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzMNKimcw1kaaJlMdTKj7RAdlsHyaImBk",
+            authDomain: "vera-pizza-app.firebaseapp.com",
+            databaseURL: "https://vera-pizza-app-default-rtdb.firebaseio.com/",
+            projectId: "vera-pizza-app",
+            storageBucket: "vera-pizza-app.appspot.com",
+            messagingSenderId: "783988757356",
+            appId: "1:783988757356:web:c66d3f2571aff0f125d949",
+            measurementId: "G-FNLSPHKXFW"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+
+        // Autenticación con Google
+        const googleProvider = new GoogleAuthProvider();
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("login-google").addEventListener("click", () => {
+                // Mostrar el spinner de carga
+                document.getElementById("loading").style.display = "flex";
+
+                // Establecer el estado del spinner en sessionStorage
+                sessionStorage.setItem("loading", "true");
+
+                signInWithPopup(auth, googleProvider)
+                    .then((result) => {
+                        const user = result.user;
+                        alert(`Bienvenido, ${user.displayName}`);
+                        console.log("Usuario autenticado:", user);
+
+                        // Redirigir a index.html
+                        window.location.href = "index.html";
+                    })
+                    .catch((error) => {
+                        console.error("Error al iniciar sesión con Google:", error);
+                        alert("Hubo un error al iniciar sesión con Google.");
+                    })
+                    .finally(() => {
+                        // No es necesario ocultar el spinner aquí, ya que la redirección ocurrirá inmediatamente
+                    });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

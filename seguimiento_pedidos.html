@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista de Pedido</title>
+    <link rel="icon" href="favicon/favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+
+        footer {
+            position: fixed;
+            /* Hace que el footer esté fijo en la parte inferior */
+            bottom: 0;
+            /* Alinea el footer a la parte inferior de la ventana */
+            left: 0;
+            /* Alinea el footer al lado izquierdo de la ventana */
+            background-color: white;
+            color: white;
+            display: flex;
+            justify-content: center;
+            /* Centra los logos en el footer */
+            align-items: center;
+            /* Centra los logos verticalmente */
+            width: 100%;
+            /* Asegura que el footer ocupe todo el ancho de la página */
+            z-index: 1000;
+            /* Asegura que el footer esté por encima de otros elementos */
+            border-top: 2px solid black;
+            /* Agrega una línea negra de 2px en la parte superior */
+        }
+
+        footer img {
+            width: 40px;
+            /* Ancho de los logos */
+            height: auto;
+            /* Mantiene la proporción */
+            margin: 10px 5px;
+            /* Espacio entre los logos (10px arriba y abajo, 15px a los lados) */
+            background-color: white;
+            /* Color de fondo para visualizar el espacio */
+        }
+
+        .separator {
+            width: 1px;
+            /* Ancho de la barra */
+            height: 50px;
+            /* Altura de la barra */
+            background-color: rgb(10, 10, 10);
+            /* Color de la barra */
+            margin: 0 10px;
+            /* Espacio a los lados de la barra */
+        }
+
+        .imagenes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            /* Envía la imagen al fondo */
+            overflow: hidden;
+            /* Asegura que no haya desbordes */
+        }
+
+        .imagenes img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+        #pedido-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(19, 18, 18, 0.5);
+            /* Fondo con opacidad */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            /* Necesario para ajustar el desplazamiento */
+            top: 100px;
+            /* Separación desde la parte superior */
+        }
+
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        #pedido p {
+            font-size: 1.3em;
+            margin: 5px 0;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="imagenes">
+        <img src="css/fondo.jpg" alt="Imagen de fondo">
+    </div>
+
+
+    <div id="pedido-container">
+        <h1>Detalles del Pedido</h1>
+        <div id="pedido">
+            <!-- Los detalles del pedido se mostrarán aquí -->
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
+        import { getMessaging, onMessage } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-messaging.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzMNKimcw1kaaJlMdTKj7RAdlsHyaImBk",
+            authDomain: "vera-pizza-app.firebaseapp.com",
+            databaseURL: "https://vera-pizza-app-default-rtdb.firebaseio.com/",
+            projectId: "vera-pizza-app",
+            storageBucket: "vera-pizza-app.appspot.com",
+            messagingSenderId: "783988757356",
+            appId: "1:783988757356:web:c66d3f2571aff0f125d949",
+            measurementId: "G-FNLSPHKXFW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+        const messaging = getMessaging(app);
+
+        console.log("Firebase configurado y servicio de mensajería inicializado");
+
+        // Verifica si hay un usuario logueado
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Usuario logueado:", user.uid);
+                const userId = user.uid;
+                const pedidoRef = ref(database, `pedidos/${userId}`);
+
+                // Escuchar cambios en tiempo real del estado del pedido
+                onValue(pedidoRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const pedido = snapshot.val();
+                        console.log("Pedido recibido:", pedido);
+                        mostrarPedido(pedido);
+
+                        // Detectar cambios en el estado del pedido
+                        const status = pedido.status;  // Cambié 'estado' por 'status'
+                        console.log("Estado del pedido cambiado:", status);  // Verifica que 'status' está disponible
+
+                        if (status) {
+                            mostrarNotificacion(status);
+                        } else {
+                            console.log("No se encontró el campo 'status'.");
+                        }
+                    } else {
+                        console.log("No se encontró ningún pedido para el usuario.");
+                    }
+                });
+            } else {
+                console.log("Usuario no logueado.");
+                document.getElementById("pedido").innerHTML = "Por favor, inicia sesión para ver tu pedido.";
+            }
+        });
+
+        // Función para mostrar los detalles del pedido
+        function mostrarPedido(pedido) {
+            const pedidoContainer = document.getElementById("pedido");
+            pedidoContainer.innerHTML = ''; // Limpiar el contenido previo
+            for (const key in pedido) {
+                if (pedido.hasOwnProperty(key)) {
+                    const value = pedido[key];
+                    const p = document.createElement("p");
+                    p.textContent = `${key}: ${value}`;
+                    pedidoContainer.appendChild(p);
+                }
+            }
+        }
+
+           // Mostrar notificación cuando el estado cambie
+        function mostrarNotificacion(status) {
+            const message = `Tu pedido está ${status}`;
+            console.log("Mostrar notificación:", message);
+
+            // Verifica si las notificaciones están habilitadas
+            if (Notification.permission === "granted") {
+                console.log("Mostrando notificación");
+
+                // Verifica si estamos en el contexto de un Service Worker
+                if (navigator.serviceWorker && Notification.permission === "granted") {
+                    // Utilizamos el Service Worker para mostrar la notificación
+                    navigator.serviceWorker.ready.then((registration) => {
+                        registration.showNotification("Actualización de tu pedido", {
+                            body: message,
+                            icon: "img/logos/logo_notificaciones.png",
+                        });
+                    }).catch(err => console.error("Error al mostrar notificación:", err));
+                } else {
+                    new Notification("Actualización de tu pedido", {
+                        body: message,
+                        icon: "img/logos/logo_notificaciones.png",
+                    });
+                }
+            } else {
+                console.log("No se ha concedido permiso para notificaciones.");
+            }
+        } 
+
+        // Solicitar permiso para las notificaciones
+        const requestNotificationPermission = async () => {
+            if (Notification.permission === 'default') {
+                const permission = await Notification.requestPermission();
+                console.log("Permiso solicitado:", permission);
+                if (permission !== 'granted') {
+                    console.warn('Permiso no concedido para notificaciones.');
+                }
+            }
+        };
+
+        requestNotificationPermission();
+
+        // Registro del Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker registrado con éxito', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('Error al registrar el Service Worker:', error);
+                    });
+            });
+        }
+
+        // Escuchar mensajes push en primer plano
+        onMessage(messaging, (payload) => {
+            console.log("Mensaje recibido en primer plano:", payload);
+            const notification = new Notification("Nuevo mensaje", {
+                body: payload.notification.body,
+                icon: 'img/logos/logo_notificaciones.png',
+            });
+        });
+    </script>
+
+
+
+</body>
+
+<footer>
+    <a href="index.html">
+        <img src="img/casa.png" alt="Logo 1">
+    </a>
+    <div class="separator"></div>
+
+    <a href="contacto.html">
+        <img src="img/redes-sociales.png" alt="Logo 2">
+    </a>
+    <div class="separator"></div>
+
+    <a href="puntos.html">
+        <img src="img/premios.png" alt="Logo 2">
+    </a>
+
+
+</footer>
+
+</html>
